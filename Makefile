@@ -123,56 +123,62 @@ ifdef LIBDIR
 LIBDIRFLAG = -L$(LIBDIR)
 endif
 
-CFLAGS	= $(OFLAGS) $(EXTRAFLAGS) $(INCDIRFLAG) $(LIBDIRFLAG) -DVERBOSE=$(VERBOSE) -DMATHACCEL=$(ACCELNUM) -DSUPERLU=$(SUPERLU)
+SRC_DIR := src
+OBJ_DIR := obj
+BIN_DIR := bin
+INCLUDE_DIR := include
+
+CFLAGS	= $(OFLAGS) $(EXTRAFLAGS) $(INCDIRFLAG) $(LIBDIRFLAG) -I$(INCLUDE_DIR) -DVERBOSE=$(VERBOSE) -DMATHACCEL=$(ACCELNUM) -DSUPERLU=$(SUPERLU)
 
 # sources, objects, headers and inputs
 
+
 # Microchannel Files
-UCHANSRC = microchannel.c
-UCHANOBJ = microchannel.$(OEXT)
-UCHANHDR = microchannel.h
+UCHANSRC = $(SRC_DIR)/microchannel.c
+UCHANOBJ = $(OBJ_DIR)/microchannel.$(OEXT)
+UCHANHDR = $(INCLUDE_DIR)/microchannel.h
 UCHANIN = example.microchannel_config
 
 # Materials Files
-MSRC = materials.c
-MOBJ = materials.$(OEXT)
-MHDR = materials.h
+MSRC = $(SRC_DIR)/materials.c
+MOBJ = $(OBJ_DIR)/materials.$(OEXT)
+MHDR = $(INCLUDE_DIR)/materials.h
 MIN = test.materials
 
 # HotFloorplan
-FLPSRC	= flp.c flp_desc.c npe.c shape.c
-FLPOBJ	= flp.$(OEXT) flp_desc.$(OEXT) npe.$(OEXT) shape.$(OEXT)
-FLPHDR	= flp.h npe.h shape.h
+FLPSRC	= $(SRC_DIR)/flp.c $(SRC_DIR)/flp_desc.c $(SRC_DIR)/npe.c $(SRC_DIR)/shape.c
+FLPOBJ	= $(OBJ_DIR)/flp.$(OEXT) $(OBJ_DIR)/flp_desc.$(OEXT) $(OBJ_DIR)/npe.$(OEXT) $(OBJ_DIR)/shape.$(OEXT)
+FLPHDR	= $(INCLUDE_DIR)/flp.h $(INCLUDE_DIR)/npe.h $(INCLUDE_DIR)/shape.h
 FLPIN = ev6.desc avg.p
 
 # HotSpot
-TEMPSRC	= temperature.c RCutil.c
-TEMPOBJ	= temperature.$(OEXT) RCutil.$(OEXT)
-TEMPHDR = temperature.h
+TEMPSRC	= $(SRC_DIR)/temperature.c $(SRC_DIR)/RCutil.c
+TEMPOBJ	= $(OBJ_DIR)/temperature.$(OEXT) $(OBJ_DIR)/RCutil.$(OEXT)
+TEMPHDR = $(INCLUDE_DIR)/temperature.h
 TEMPIN	=
 
 #	Package model
-PACKSRC	=	package.c
-PACKOBJ	=	package.$(OEXT)
-PACKHDR	=	package.h
+PACKSRC	=	$(SRC_DIR)/package.c
+PACKOBJ	=	$(OBJ_DIR)/package.$(OEXT)
+PACKHDR	=	$(INCLUDE_DIR)/package.h
 PACKIN	=	package.config
 
 # HotSpot block model
-BLKSRC = temperature_block.c
-BLKOBJ = temperature_block.$(OEXT)
-BLKHDR	= temperature_block.h
+BLKSRC = $(SRC_DIR)/temperature_block.c
+BLKOBJ = $(OBJ_DIR)/temperature_block.$(OEXT)
+BLKHDR	= $(INCLUDE_DIR)/temperature_block.h
 BLKIN	= ev6.flp gcc.ptrace
 
 # HotSpot grid model
-GRIDSRC = temperature_grid.c
-GRIDOBJ = temperature_grid.$(OEXT)
-GRIDHDR	= temperature_grid.h
+GRIDSRC = $(SRC_DIR)/temperature_grid.c
+GRIDOBJ = $(OBJ_DIR)/temperature_grid.$(OEXT)
+GRIDHDR	= $(INCLUDE_DIR)/temperature_grid.h
 GRIDIN	= layer.lcf example.lcf example.flp example.ptrace
 
 # Miscellaneous
-MISCSRC = util.c wire.c
-MISCOBJ = util.$(OEXT) wire.$(OEXT)
-MISCHDR = util.h wire.h
+MISCSRC = $(SRC_DIR)/util.c $(SRC_DIR)/wire.c
+MISCOBJ = $(OBJ_DIR)/util.$(OEXT) $(OBJ_DIR)/wire.$(OEXT)
+MISCHDR = $(INCLUDE_DIR)/util.h $(INCLUDE_DIR)/wire.h
 MISCIN	= hotspot.config
 
 # all objects
@@ -181,8 +187,9 @@ OBJ	= $(UCHANOBJ) $(MOBJ) $(TEMPOBJ) $(PACKOBJ) $(BLKOBJ) $(GRIDOBJ) $(FLPOBJ) $
 # targets
 all:	hotspot hotfloorplan lib
 
-hotspot:	hotspot.$(OEXT) $(OBJ)
-	$(CC) $(CFLAGS) -o hotspot hotspot.$(OEXT) $(OBJ) $(LIBS)
+hotspot:	$(OBJ_DIR)/hotspot.$(OEXT) $(OBJ)
+	@mkdir -p $(BIN_DIR)
+	$(CC) $(CFLAGS) -o $(BIN_DIR)/hotspot $(OBJ_DIR)/hotspot.$(OEXT) $(OBJ) $(LIBS)
 
 ifdef LIBDIR
 		@echo
@@ -190,8 +197,9 @@ ifdef LIBDIR
 		@echo "...Done. Do not forget to include $(LIBDIR) in your LD_LIBRARY_PATH"
 endif
 
-hotfloorplan:	hotfloorplan.$(OEXT) $(OBJ)
-	$(CC) $(CFLAGS) -o hotfloorplan hotfloorplan.$(OEXT) $(OBJ) $(LIBS)
+hotfloorplan:	$(OBJ_DIR)/hotfloorplan.$(OEXT) $(OBJ)
+	@mkdir -p $(BIN_DIR)
+	$(CC) $(CFLAGS) -o $(BIN_DIR)/hotfloorplan $(OBJ_DIR)/hotfloorplan.$(OEXT) $(OBJ) $(LIBS)
 ifdef LIBDIR
 		@echo
 		@echo
@@ -199,12 +207,16 @@ ifdef LIBDIR
 endif
 
 lib: 	hotspot hotfloorplan
-	$(RM) libhotspot.$(LEXT)
-	$(AR) libhotspot.$(LEXT) $(OBJ)
-	$(RANLIB) libhotspot.$(LEXT)
+	$(RM) $(OBJ_DIR)/libhotspot.$(LEXT)
+	$(AR) $(OBJ_DIR)/libhotspot.$(LEXT) $(OBJ)
+	$(RANLIB) $(OBJ_DIR)/libhotspot.$(LEXT)
 
 #pull in dependency info for existing .o files
 -include $(OBJ:.o=.d)
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 .c.$(OEXT):
 	$(CC) $(CFLAGS) -c $*.c
@@ -217,12 +229,12 @@ filelist:
 	@echo $(FLPSRC) $(TEMPSRC) $(PACKSRC) $(BLKSRC) $(GRIDSRC) $(MISCSRC) \
 		  $(FLPHDR) $(TEMPHDR) $(PACKHDR) $(BLKHDR) $(GRIDHDR) $(MISCHDR) \
 		  $(FLPIN) $(TEMPIN) $(PACKIN) $(BLKIN) $(GRIDIN) $(MISCIN) \
-		  hotspot.h hotspot.c hotfloorplan.h hotfloorplan.c \
-		  sim-template_block.c \
+		  $(INCLUDE_DIR)/hotspot.h $(SRC_DIR)/hotspot.c $(INCLUDE_DIR)/hotfloorplan.h $(SRC_DIR)/hotfloorplan.c \
+		  $(SRC_DIR)/sim-template_block.c \
 		  tofig.pl grid_thermal_map.pl \
 		  Makefile
 clean:
-	$(RM) *.$(OEXT) *.obj *.d core *~ Makefile.bak hotspot hotfloorplan libhotspot.$(LEXT)
+	$(RM) -r $(OBJ_DIR) $(BIN_DIR) *.$(OEXT) *.obj *.d  core *~ Makefile.bak 
 
 cleano:
-	$(RM) *.$(OEXT) *.obj
+	$(RM) -r $(OBJ_DIR) *.$(OEXT) *.obj
