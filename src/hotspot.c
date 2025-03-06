@@ -557,8 +557,12 @@ int main(int argc, char **argv)
 
   /* names of functional units	*/
   names = alloc_names(MAX_UNITS, STR_SIZE);
-  if(read_names(pin, names) != n)
+  if(read_names(pin, names) != n) {    // print the number of units that differ in the floorplan and trace file
+    printf("Warining: no. of units in floorplan and trace file differ\n");
+    printf("Floorplan unit number = %d\n", n);
+    printf("Trace file unit number = %d\n", read_names(pin, names));
     fatal("no. of units in floorplan and trace file differ\n");
+  }
 
   /* header line of temperature trace	*/
   if (do_transient)
