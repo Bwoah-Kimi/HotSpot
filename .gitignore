@@ -3,6 +3,8 @@
 *.a
 bin
 obj
+*.log
+*.tsv
 
-*outputs/*
+*steady_temp
 *init_temp*
