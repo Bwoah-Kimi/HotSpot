@@ -1,0 +1,11 @@
+# Line Format: <unit-name>\t<width>\t<height>\t<left-x>\t<bottom-y>\t[<specific-heat>]\t[<resistivity>]
+# all dimensions are in meters
+tile_0_0    0.0003    0.0003    0.0   0.0
+tile_0_1    0.0003    0.0003    0.0   0.0003
+tile_0_2    0.0003    0.0003    0.0   0.0006
+tile_1_0    0.0003    0.0003    0.0003    0.0
+tile_1_1    0.0003    0.0003    0.0003    0.0003
+tile_1_2    0.0003    0.0003    0.0003    0.0006
+tile_2_0    0.0003    0.0003    0.0006    0.0 
+tile_2_1    0.0003    0.0003    0.0006    0.0003    
+tile_2_2    0.0003    0.0003    0.0006    0.0006
